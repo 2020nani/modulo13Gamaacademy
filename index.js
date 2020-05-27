@@ -57,7 +57,7 @@ obterUsuario(function resolverUsuario(error, usuario){
     `)
   })
   })
-})*/
+})
 //refatorando callbacks para promisses
 //importamos um modulo interno node.js 
 const util = require('util');
@@ -131,4 +131,59 @@ Telefone: (${resultado.Telefone.ddd}) ${resultado.Telefone.telefone}
 })
 .catch(function(error){
   console.error('Deu erro')
-})
+})*/
+//usando async/await
+const util = require('util');
+//transformar callback obterendereco em promisse
+const obterEnderecoAsync = util.promisify(obterEndereco)
+function obterUsuario(){
+  //quando der problema chama reject
+  //quando sucesso chama resolve
+  return new Promise(function resolvePromise(resolve, reject){
+    
+    setTimeout(function(){
+      return resolve( {
+        id:1,
+        nome:'hernani',
+        dataNascimento:new Date()
+      })
+    }, 1000);
+  })
+ }
+ function obterTelefone(idUsuario){
+   return new Promise(function resolvePromise(resolve, reject){
+
+     setTimeout(()=>{
+       return resolve( {
+         telefone: '99999999',
+         ddd: 14
+       })
+     },2000);
+   })
+ }
+ function obterEndereco(idUsuario, callback){
+ setTimeout(()=>{
+   return callback(null, {
+     rua: 'os feras',
+     numero: 10
+   })
+ })
+ }
+main()
+ async function main(){
+  try{
+    const usuario = await obterUsuario()
+    const telefone = await obterTelefone(usuario.id)
+    const endereco = await obterEnderecoAsync(usuario.id)
+
+    console.log(`
+    Nome:${usuario.nome}
+    Endereco: ${endereco.rua}, ${endereco.numero}
+    Telefone: (${telefone.ddd}) ${telefone.telefone}
+
+    `)
+
+  }catch(error){
+    console.log(error)
+  }
+ }
